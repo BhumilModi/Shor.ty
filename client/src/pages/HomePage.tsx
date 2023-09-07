@@ -15,6 +15,7 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import {useState} from "react";
+import {BASE_URL} from "../Constants";
 import {ReactComponent as Illustration} from "../assets/undraw_share_link_re_54rx.svg";
 
 type TransitionProps = Omit<SlideProps, "direction">;
@@ -33,7 +34,7 @@ function HomePage() {
     setLoading(true);
     axios
       .post(
-        "http://localhost:8080/",
+        BASE_URL,
         {
           originalURL,
         },
@@ -87,7 +88,7 @@ function HomePage() {
         />
       </Snackbar>
       <Stack p={2} px={10}>
-        <Typography fontSize="42px" fontFamily={"'Kaushan Script', cursive"}>
+        <Typography fontSize={48} fontFamily="'Fugaz One', cursive;">
           Shor.TY
         </Typography>
       </Stack>
