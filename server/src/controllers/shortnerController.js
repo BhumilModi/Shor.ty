@@ -26,12 +26,11 @@ const generateURL = async (req, res) => {
 
 const getOriginalURL = async (req, res) => {
   try {
-    const originalURL = await ShortURL.findOne({ key: req.params.key }).then((res) => res.originalURL)
-
+    const originalURL = await ShortURL.findOne({ key: req.params.key })
     if (originalURL) {
-      return res.status(200).json({ originalURL })
+      return res.status(200).json({ originalURL: originalURL.originalURL })
     } else {
-      return res.status(404)
+      return res.status(404).json({ message: "No URL found" })
     }
 
   } catch (err) {

@@ -3,13 +3,21 @@ import InsertLinkIcon from "@mui/icons-material/InsertLink";
 import {
   Button,
   Divider,
+  Slide,
+  SlideProps,
+  Snackbar,
+  SnackbarContent,
   Stack,
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import {useState} from "react";
+import {ReactComponent as Illustration} from "../assets/undraw_share_link_re_54rx.svg";
+
+type TransitionProps = Omit<SlideProps, "direction">;
 
 function HomePage() {
   const host = window.location;
@@ -17,9 +25,12 @@ function HomePage() {
   const [originalURL, setOriginalURL] = useState<string>();
   const [key, setKey] = useState<string>();
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleGenerate = () => {
     setCopied(false);
+    setLoading(true);
     axios
       .post(
         "http://localhost:8080/",
@@ -34,7 +45,19 @@ function HomePage() {
       )
       .then((response) => {
         setKey(response.data.newURL);
-      });
+      })
+      .catch(() => {
+        setError(true);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  function TransitionRight(props: TransitionProps) {
+    return <Slide {...props} direction="left" />;
+  }
+
+  const handleClose = () => {
+    setError(false);
   };
 
   return (
@@ -51,13 +74,27 @@ function HomePage() {
           clipPath: "polygon(0 15vw,100% 0,100% 100%,0 100%)",
         }}
       ></Stack>
+      <Snackbar
+        open={error}
+        onClose={handleClose}
+        autoHideDuration={3000}
+        TransitionComponent={TransitionRight}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
+      >
+        <SnackbarContent
+          style={{background: "#5C5470", color: "#faf0e6"}}
+          message="Something went wrong"
+        />
+      </Snackbar>
       <Stack p={2} px={10}>
         <Typography fontSize="42px" fontFamily={"'Kaushan Script', cursive"}>
           Shor.TY
         </Typography>
       </Stack>
-      <Stack direction="row">
-        <Stack width="50%"></Stack>
+      <Stack direction="row" height="60vh">
+        <Stack width="50%" mt={5}>
+          <Illustration width="80%" height="80%" />
+        </Stack>
         <Stack
           width="40%"
           bgcolor="#fff"
@@ -98,9 +135,13 @@ function HomePage() {
                 },
               }}
             >
-              <Typography fontSize={14} fontWeight={700}>
-                Generate
-              </Typography>
+              {loading ? (
+                <CircularProgress size={20} sx={{color: "#faf0e6"}} />
+              ) : (
+                <Typography fontSize={14} fontWeight={700}>
+                  Generate
+                </Typography>
+              )}
             </Button>
           </Stack>
           <Divider variant="middle" sx={{pt: 1}} />
