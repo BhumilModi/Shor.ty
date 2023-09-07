@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  display: flex;
+  min-height: 100vh;
+  background-color: #faf0e6;
+  color: #352f44;
+}
+
+#root {
+  width: 100%;
+  box-sizing: border-box;
+}

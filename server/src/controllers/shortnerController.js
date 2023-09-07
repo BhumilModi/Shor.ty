@@ -1,11 +1,17 @@
-const shortURL = require("../models/shortURL")
 const ShortURL = require("../models/shortURL")
 const keyGenerator = require("../utils/randomKeyGenerator")
 
-const generateURL = (req, res) => {
+const generateURL = async (req, res) => {
   if (!req.body.originalURL) {
     return res.status(400).json({ message: "Original URL required" })
   }
+
+  const key = await ShortURL.findOne({ originalURL: req.body.originalURL })
+
+  if (key) {
+    return res.status(200).json({ newURL: key.key })
+  }
+
   const shortURL = new ShortURL({
     key: keyGenerator(),
     originalURL: req.body.originalURL
@@ -20,13 +26,14 @@ const generateURL = (req, res) => {
 
 const getOriginalURL = async (req, res) => {
   try {
-    const originalURL = await shortURL.findOne({ key: req.params.key }).then((res) => res.originalURL)
+    const originalURL = await ShortURL.findOne({ key: req.params.key }).then((res) => res.originalURL)
 
     if (originalURL) {
       return res.status(200).json({ originalURL })
     } else {
       return res.status(404)
     }
+
   } catch (err) {
     return res.status(500).json({ message: err.message })
   }
